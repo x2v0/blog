@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блог — Валерий Онучин</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f5f3eb; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { font-family: monospace; font-size: 32px; margin-bottom: 20px; border-bottom: 2px solid #0288d1; padding-bottom: 10px; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #0288d1; text-decoration: none; font-weight: bold; }
+        .post-node { margin-bottom: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 12px; background: #fff; }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: #888; }
+        .post-author { font-weight: bold; color: #333; }
+        .post-subject { font-size: 18px; font-weight: bold; color: #0288d1; margin-bottom: 10px; }
+        .post-body { font-size: 15px; line-height: 1.6; color: #444; }
+        .post-body a { color: #0288d1; font-weight: bold; }
+        mark { background: #ffeb3b; color: #000; padding: 0 2px; border-radius: 2px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="https://x2v0.github.io/" class="back-link">← На главную</a>
+        <div class="header">Блог</div>
+        <input type="text" id="search-input" placeholder="🔍 Поиск..." style="width:100%; padding:15px; border:1px solid #ddd; border-radius:10px; font-size:16px; margin-bottom:20px; box-sizing:border-box;">
+        <div id="feed"><p>Загрузка...</p></div>
+    </div>
+
+    <script>
+        let allNodes = [];
+        let query = '';
+
+        fetch('./tree.json').then(r => r.json()).then(data => {
+            allNodes = data;
+            render(data);
+        }).catch(err => {
+            document.getElementById('feed').innerHTML = '<p style="color:red;">Ошибка: ' + err.message + '</p>';
+        });
+
+        function render(nodes) {
+            const feed = document.getElementById('feed');
+            feed.innerHTML = '';
+            if (nodes.length === 0) {
+                feed.innerHTML = '<p>Ничего не найдено.</p>';
+                return;
+            }
+            nodes.forEach(node => {
+                const div = document.createElement('div');
+                div.className = 'post-node';
+                div.innerHTML = `
+                    <div class="post-header">
+                        <span class="post-author">${node.from}</span>
+                        <span>${node.date}</span>
+                    </div>
+                    <div class="post-subject">${highlight(node.subject, query)}</div>
+                    <div class="post-body">${highlight(node.body, query)}</div>
+                `;
+                feed.appendChild(div);
+            });
+        }
+
+        function highlight(text, q) {
+            if (!q) return text.replace(/\n/g, '<br>');
+            const safeQ = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return text.replace(/\n/g, '<br>').replace(new RegExp('(' + safeQ + ')', 'gi'), '<mark>$1</mark>');
+        }
+
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            query = e.target.value.trim();
+            if (!query) {
+                render(allNodes);
+                return;
+            }
+            const filtered = allNodes.filter(n =>
+                (n.subject || '').toLowerCase().includes(query.toLowerCase()) ||
+                (n.body || '').toLowerCase().includes(query.toLowerCase())
+            );
+            render(filtered);
+        });
+    </script>
+</body>
+</html>
