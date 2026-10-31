@@ -142,6 +142,9 @@
                     <div class="post-preview" id="preview-${idx}">${highlight(preview, query)}</div>
                     <div class="post-full" id="full-${idx}">${fullHtml}</div>
                     <a href="#" class="toggle-btn" id="btn-${idx}" onclick="togglePost(event, ${idx})">Читать полностью →</a>
+                    <div id="comments-${idx}" class="comments-container" style="display:none; margin-top:15px;">
+                        <div id="utterances-${idx}"></div>
+                    </div>
                 `;
                 feed.appendChild(div);
             });
@@ -152,16 +155,38 @@
             const preview = document.getElementById('preview-' + idx);
             const full = document.getElementById('full-' + idx);
             const btn = document.getElementById('btn-' + idx);
+            const comments = document.getElementById('comments-' + idx);
 
             if (full.style.display === 'block') {
                 full.style.display = 'none';
                 preview.style.display = 'block';
+                if (comments) comments.style.display = 'none';
                 btn.textContent = 'Читать полностью →';
             } else {
                 full.style.display = 'block';
                 preview.style.display = 'none';
+                if (comments) {
+                    comments.style.display = 'block';
+                    loadUtterances(idx);
+                }
                 btn.textContent = '← К списку статей';
             }
+        }
+
+        function loadUtterances(idx) {
+            const container = document.getElementById('utterances-' + idx);
+            if (!container || container.innerHTML !== '') return;
+            
+            const postId = 'post-' + idx; // или используйте node.id
+            
+            const script = document.createElement('script');
+            script.src = 'https://utteranc.es/client.js';
+            script.setAttribute('repo', 'x2v0/x2v0.github.io');
+            script.setAttribute('issue-term', postId);
+            script.setAttribute('theme', 'preferred-color-scheme');
+            script.setAttribute('crossorigin', 'anonymous');
+            script.async = true;
+            container.appendChild(script);
         }
 
         function highlight(text, q) {
