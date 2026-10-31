@@ -6,38 +6,81 @@
     <title>Блог — Валерий Онучин</title>
     <script src="./marked.min.js"></script>
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; background: #f5f3eb; color: #333; margin: 0; padding: 20px; }
+        :root {
+            --bg: #f5f3eb;
+            --text: #333;
+            --card-bg: #fff;
+            --border: #ddd;
+            --accent: #0288d1;
+            --fg2: #444;
+            --fg3: #888;
+        }
+        [data-theme="dark"] {
+            --bg: #121212;
+            --text: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --border: #333;
+            --accent: #4fc3f7;
+            --fg2: #b0b0b0;
+            --fg3: #777;
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; transition: background 0.3s, color 0.3s; }
         .container { max-width: 900px; margin: 0 auto; }
-        .header { font-family: monospace; font-size: 32px; margin-bottom: 20px; border-bottom: 2px solid #0288d1; padding-bottom: 10px; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: #0288d1; text-decoration: none; font-weight: bold; }
-        .post-node { margin-bottom: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 12px; background: #fff; }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: #888; }
-        .post-author { font-weight: bold; color: #333; }
-        .post-subject { font-size: 18px; font-weight: bold; color: #0288d1; margin-bottom: 10px; }
-        .post-preview { font-size: 15px; line-height: 1.6; color: #444; }
-        .post-full { display: none; font-size: 15px; line-height: 1.6; color: #444; }
-        .post-full h1 { font-size: 24px; margin-top: 0; }
-        .post-full h2 { font-size: 20px; margin-top: 20px; }
-        .post-full h3 { font-size: 18px; margin-top: 15px; }
+        .header { font-family: monospace; font-size: 32px; margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: var(--accent); text-decoration: none; font-weight: bold; }
+        .post-node { margin-bottom: 20px; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--card-bg); }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: var(--fg3); }
+        .post-author { font-weight: bold; color: var(--text); }
+        .post-subject { font-size: 18px; font-weight: bold; color: var(--accent); margin-bottom: 10px; }
+        .post-preview { font-size: 15px; line-height: 1.6; color: var(--fg2); }
+        .post-full { display: none; font-size: 15px; line-height: 1.6; color: var(--fg2); }
+        .post-full h1 { font-size: 24px; margin-top: 0; color: var(--text); }
+        .post-full h2 { font-size: 20px; margin-top: 20px; color: var(--text); }
+        .post-full h3 { font-size: 18px; margin-top: 15px; color: var(--text); }
         .post-full p { margin: 10px 0; }
         .post-full ul, .post-full ol { margin: 10px 0; padding-left: 20px; }
-        .post-full a { color: #0288d1; font-weight: bold; }
-        .post-full code { background: #f0f0f0; padding: 2px 4px; border-radius: 3px; }
+        .post-full a { color: var(--accent); font-weight: bold; }
+        .post-full code { background: var(--bg); padding: 2px 4px; border-radius: 3px; }
         .post-full pre { background: #282c34; color: #fff; padding: 15px; border-radius: 8px; overflow-x: auto; }
-        .post-full blockquote { border-left: 4px solid #0288d1; padding-left: 15px; color: #666; margin: 10px 0; }
-        .toggle-btn { display: inline-block; margin-top: 10px; color: #0288d1; font-weight: bold; cursor: pointer; text-decoration: none; }
+        .post-full blockquote { border-left: 4px solid var(--accent); padding-left: 15px; color: var(--fg3); margin: 10px 0; }
+        .toggle-btn { display: inline-block; margin-top: 10px; color: var(--accent); font-weight: bold; cursor: pointer; text-decoration: none; }
         mark { background: #ffeb3b; color: #000; padding: 0 2px; border-radius: 2px; }
+        #theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 9999; font-size: 24px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        #theme-toggle:hover { transform: scale(1.1); }
     </style>
 </head>
 <body>
+    <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
     <div class="container">
         <a href="https://x2v0.github.io/" class="back-link">← На главную</a>
         <div class="header">Блог</div>
-        <input type="text" id="search-input" placeholder="🔍 Поиск..." style="width:100%; padding:15px; border:1px solid #ddd; border-radius:10px; font-size:16px; margin-bottom:20px; box-sizing:border-box;">
+        <input type="text" id="search-input" placeholder="🔍 Поиск..." style="width:100%; padding:15px; border:1px solid var(--border); border-radius:10px; font-size:16px; margin-bottom:20px; box-sizing:border-box; background:var(--card-bg); color:var(--text);">
         <div id="feed"><p>Загрузка...</p></div>
     </div>
 
     <script>
+        // Тема (синхронизация с основным сайтом через localStorage, ключ 'theme')
+        var currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        document.getElementById('theme-toggle').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+
+        function toggleTheme() {
+            var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            var newTheme = isDark ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            document.getElementById('theme-toggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Слушаем изменения из других вкладок/страниц
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'theme') {
+                var newTheme = e.newValue || 'light';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                document.getElementById('theme-toggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            }
+        });
+
         let allNodes = [];
         let query = '';
 
@@ -60,10 +103,7 @@
                 div.className = 'post-node';
                 div.id = 'post-' + idx;
 
-                // Превью (первые 200 символов)
                 const preview = (node.body || '').substring(0, 200) + '...';
-
-                // Полный текст (парсим Markdown)
                 let fullHtml = node.body || '';
                 if (typeof marked !== 'undefined') {
                     fullHtml = marked.parse(fullHtml);
