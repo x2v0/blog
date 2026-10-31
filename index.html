@@ -14,16 +14,18 @@
         .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: #888; }
         .post-author { font-weight: bold; color: #333; }
         .post-subject { font-size: 18px; font-weight: bold; color: #0288d1; margin-bottom: 10px; }
-        .post-body { font-size: 15px; line-height: 1.6; color: #444; }
-        .post-body h1 { font-size: 24px; margin-top: 0; }
-        .post-body h2 { font-size: 20px; margin-top: 20px; }
-        .post-body h3 { font-size: 18px; margin-top: 15px; }
-        .post-body p { margin: 10px 0; }
-        .post-body ul, .post-body ol { margin: 10px 0; padding-left: 20px; }
-        .post-body a { color: #0288d1; font-weight: bold; }
-        .post-body code { background: #f0f0f0; padding: 2px 4px; border-radius: 3px; }
-        .post-body pre { background: #282c34; color: #fff; padding: 15px; border-radius: 8px; overflow-x: auto; }
-        .post-body blockquote { border-left: 4px solid #0288d1; padding-left: 15px; color: #666; margin: 10px 0; }
+        .post-preview { font-size: 15px; line-height: 1.6; color: #444; }
+        .post-full { display: none; font-size: 15px; line-height: 1.6; color: #444; }
+        .post-full h1 { font-size: 24px; margin-top: 0; }
+        .post-full h2 { font-size: 20px; margin-top: 20px; }
+        .post-full h3 { font-size: 18px; margin-top: 15px; }
+        .post-full p { margin: 10px 0; }
+        .post-full ul, .post-full ol { margin: 10px 0; padding-left: 20px; }
+        .post-full a { color: #0288d1; font-weight: bold; }
+        .post-full code { background: #f0f0f0; padding: 2px 4px; border-radius: 3px; }
+        .post-full pre { background: #282c34; color: #fff; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .post-full blockquote { border-left: 4px solid #0288d1; padding-left: 15px; color: #666; margin: 10px 0; }
+        .toggle-btn { display: inline-block; margin-top: 10px; color: #0288d1; font-weight: bold; cursor: pointer; text-decoration: none; }
         mark { background: #ffeb3b; color: #000; padding: 0 2px; border-radius: 2px; }
     </style>
 </head>
@@ -53,26 +55,49 @@
                 feed.innerHTML = '<p>Ничего не найдено.</p>';
                 return;
             }
-            nodes.forEach(node => {
+            nodes.forEach((node, idx) => {
                 const div = document.createElement('div');
                 div.className = 'post-node';
-                
-                // Парсим Markdown в HTML (если marked загружен)
-                let bodyHtml = node.body;
+                div.id = 'post-' + idx;
+
+                // Превью (первые 200 символов)
+                const preview = (node.body || '').substring(0, 200) + '...';
+
+                // Полный текст (парсим Markdown)
+                let fullHtml = node.body || '';
                 if (typeof marked !== 'undefined') {
-                    bodyHtml = marked.parse(node.body);
+                    fullHtml = marked.parse(fullHtml);
                 }
-                
+
                 div.innerHTML = `
                     <div class="post-header">
                         <span class="post-author">${node.from}</span>
                         <span>${node.date}</span>
                     </div>
                     <div class="post-subject">${highlight(node.subject, query)}</div>
-                    <div class="post-body">${bodyHtml}</div>
+                    <div class="post-preview" id="preview-${idx}">${highlight(preview, query)}</div>
+                    <div class="post-full" id="full-${idx}">${fullHtml}</div>
+                    <a href="#" class="toggle-btn" id="btn-${idx}" onclick="togglePost(event, ${idx})">Читать полностью →</a>
                 `;
                 feed.appendChild(div);
             });
+        }
+
+        function togglePost(e, idx) {
+            e.preventDefault();
+            const preview = document.getElementById('preview-' + idx);
+            const full = document.getElementById('full-' + idx);
+            const btn = document.getElementById('btn-' + idx);
+
+            if (full.style.display === 'block') {
+                full.style.display = 'none';
+                preview.style.display = 'block';
+                btn.textContent = 'Читать полностью →';
+            } else {
+                full.style.display = 'block';
+                preview.style.display = 'none';
+                btn.textContent = '← К списку статей';
+            }
         }
 
         function highlight(text, q) {
