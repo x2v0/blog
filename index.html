@@ -27,7 +27,6 @@
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; transition: background 0.3s, color 0.3s; }
         .container { max-width: 900px; margin: 0 auto; }
         .header { font-family: monospace; font-size: 32px; margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: var(--accent); text-decoration: none; font-weight: bold; }
         .post-node { margin-bottom: 20px; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--card-bg); }
         .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: var(--fg3); }
         .post-author { font-weight: bold; color: var(--text); }
@@ -52,7 +51,6 @@
 <body>
     <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
     <div class="container">
-        <a href="https://x2v0.github.io/" class="back-link">← На главную</a>
         <div class="header">Блог</div>
         <input type="text" id="search-input" placeholder="🔍 Поиск..." style="width:100%; padding:15px; border:1px solid var(--border); border-radius:10px; font-size:16px; margin-bottom:20px; box-sizing:border-box; background:var(--card-bg); color:var(--text);">
         <div id="feed"><p>Загрузка...</p></div>
