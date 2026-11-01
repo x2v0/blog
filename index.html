@@ -70,12 +70,13 @@
     
         
         #scroll-top {
-            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+            position: fixed; bottom: 80px; right: 20px; width: 50px; height: 50px;
             border-radius: 50%; background: var(--accent); color: #fff; border: none;
             font-size: 24px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: block; z-index: 9999;
-            opacity: 0.7; transition: opacity 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: block; z-index: 99999;
+            opacity: 0.9; transition: opacity 0.2s;
         }
+        #scroll-top:hover { opacity: 1; }
         #scroll-top:hover { opacity: 1; }
 
     </style>
@@ -130,6 +131,8 @@
                 const cleanBody = (node.body || '').replace(/^#+\s+/gm, '').replace(/\*\*/g, '');
                 const preview = cleanBody.substring(0, 200) + '...';
                 let fullHtml = node.body || '';
+                // Убираем первый заголовок (H1), чтобы не дублировать subject
+                fullHtml = fullHtml.replace(/^#\s+.*$/m, '');
                 if (typeof marked !== 'undefined') {
                     fullHtml = marked.parse(fullHtml);
                 }
