@@ -183,8 +183,13 @@
                     <div class="post-subject">${highlight(node.subject, query)}</div>
                     <div class="post-preview" id="preview-${node.id}">${highlight(preview, query)}</div>
                     <div class="post-full" id="full-${node.id}">${fullHtml}</div>
-                    <a href="#" class="toggle-btn" id="btn-${node.id}" onclick="togglePost(event, '${node.id}')">Читать полностью →</a>
-                    <a href="./comments.html?id=post-${idx}&title=${encodeURIComponent(node.subject)}" class="feedback-btn" target="_blank">💬 Обсудить / Читать комментарии</a>
+                    <div style="margin-top: 10px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                        <a href="#" class="toggle-btn" id="btn-${node.id}" onclick="togglePost(event, '${node.id}')">Читать полностью →</a>
+                        <a href="./comments.html?id=${node.id}&title=${encodeURIComponent(node.subject)}" class="feedback-btn" target="_blank">💬 Обсудить</a>
+                        <a href="#" class="icon-btn" onclick="copyLink(event, '${node.id}'); return false;" title="Скопировать ссылку">🔗</a>
+                        <a href="#" class="icon-btn" onclick="copyText(event, '${node.id}'); return false;" title="Скопировать текст">📋</a>
+                    </div>
+                    
                     
                 `;
                 feed.appendChild(div);
