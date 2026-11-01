@@ -131,6 +131,7 @@
                     <div class="post-preview" id="preview-${node.id}">${highlight(preview, query)}</div>
                     <div class="post-full" id="full-${node.id}">${fullHtml}</div>
                     <a href="#" class="toggle-btn" id="btn-${node.id}" onclick="togglePost(event, '${node.id}')">Читать полностью →</a>
+                    <a href="./comments.html?id=${encodeURIComponent(node.id)}&title=${encodeURIComponent(node.subject)}" class="feedback-btn" target="_blank">💬 Обсудить / Читать комментарии</a>
                     
                 `;
                 feed.appendChild(div);
