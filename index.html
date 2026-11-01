@@ -150,10 +150,11 @@
         }
 
         function loadGiscus(postId) {
+            // Очищаем ID от недопустимых символов (оставляем только буквы, цифры и дефисы)
+            const safeId = postId.replace(/[^a-zA-Z0-9_-]/g, '');
+            
             const container = document.getElementById('giscus-' + postId);
             if (!container || container.innerHTML !== '') return;
-            
-            // postId уже передан
             
             const script = document.createElement('script');
             script.src = 'https://giscus.app/client.js';
@@ -162,7 +163,7 @@
             script.setAttribute('data-category', 'Blog comments');
             script.setAttribute('data-category-id', 'DIC_kwDOFNRB_84DJ5jS');
             script.setAttribute('data-mapping', 'specific');
-            script.setAttribute('data-term', postId);
+            script.setAttribute('data-term', safeId);
             script.setAttribute('data-strict', '0');
             script.setAttribute('data-reactions-enabled', '1');
             script.setAttribute('data-emit-metadata', '0');
