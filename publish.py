@@ -6,6 +6,29 @@ import subprocess
 import requests
 import os
 
+def run_tests():
+    """Запускает тесты из основного репозитория перед пушем."""
+    print("\n=== Запуск тестов (site.test.js) ===")
+    try:
+        # Путь к тестам в основном репозитории
+        tests_dir = pathlib.Path.home() / "x2v0.github.io"
+        result = subprocess.run(
+            ["node", "--test", "tests/site.test.js"],
+            cwd=tests_dir,
+            capture_output=True,
+            text=True
+        )
+        if result.returncode != 0:
+            print("❌ ТЕСТЫ ПРОВАЛЕНЫ! Пуш отменён.")
+            print(result.stdout)
+            print(result.stderr)
+            return False
+        print("✅ Все тесты пройдены.")
+        return True
+    except Exception as e:
+        print(f"⚠ Не удалось запустить тесты: {e}")
+        return True  # Продолжаем, если Node.js не установлен
+
 def main():
     post_file = "post.md"
     if not pathlib.Path(post_file).exists():
@@ -34,7 +57,9 @@ def main():
     tree = json.loads(tree_path.read_text(encoding="utf-8")) if tree_path.exists() else []
 
     today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    new_id = f"post-{len(tree)}"  # индекс нового поста
+    
+    # ИСПОЛЬЗУЕМ ЧИСЛОВОЙ ID (для Giscus)
+    new_id = f"post-{len(tree)}"
     new_post = {
         "id": new_id,
         "in_reply_to": "",
@@ -48,7 +73,7 @@ def main():
 
     existing_ids = [n.get("id", "") for n in tree]
     if new_id in existing_ids:
-        print(f"⚠ Пост с id {new_post['id']} уже есть. Обновляю...")
+        print(f"⚠ Пост с id {new_id} уже есть. Обновляю...")
         for i, n in enumerate(tree):
             if n.get("id") == new_id:
                 tree[i] = new_post
@@ -70,14 +95,14 @@ def main():
         try:
             url = "https://api.github.com/graphql"
             headers = {"Authorization": f"Bearer {token}"}
-            
+
             # Получаем ID репозитория
             repo_query = 'query { repository(owner: "x2v0", name: "x2v0.github.io") { id } }'
             repo_resp = requests.post(url, json={"query": repo_query}, headers=headers)
-            
+
             if "data" in repo_resp.json():
                 repo_id = repo_resp.json()["data"]["repository"]["id"]
-                
+
                 # Создаём Discussion
                 create_query = """
                 mutation($repoId: ID!, $categoryId: ID!, $title: String!, $body: String!) {
@@ -93,21 +118,28 @@ def main():
                     "body": f"Обсуждение поста: {subject}"
                 }
                 create_resp = requests.post(url, json={"query": create_query, "variables": create_vars}, headers=headers)
-                
+
                 if "errors" in create_resp.json():
                     print(f"⚠ Discussion не создан: {create_resp.json()['errors'][0]['message']}")
                 else:
-                    print(f"✓ Discussion создан для {new_post['id']}")
+                    print(f"✓ Discussion создан для {new_id}")
         except Exception as e:
             print(f"⚠ Не удалось создать Discussion: {e}")
     else:
         print("⚠ Токен не найден (~/git.txt). Discussion не создан.")
+
+    # === ЗАПУСК ТЕСТОВ ПЕРЕД ПУШЕМ ===
+    if not run_tests():
+        print("⚠ Публикация остановлена из-за ошибок в тестах.")
+        return
 
     # === ПУШ НА GITHUB ===
     print("\n=== Пуш на GitHub ===")
     subprocess.run(["git", "add", "-A"])
     subprocess.run(["git", "commit", "-m", f"feat: add post '{subject}'"])
     subprocess.run(["git", "push", "origin", "main"])
+    
+    print(f"\n🔗 Ссылка на обсуждение: https://x2v0.github.io/blog/comments.html?id={new_id}")
     print("✓ Готово! Пост опубликован.")
 
 if __name__ == "__main__":
