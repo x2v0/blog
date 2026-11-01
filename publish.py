@@ -3,6 +3,8 @@ import pathlib
 import datetime
 import sys
 import subprocess
+import requests
+import os
 
 def main():
     post_file = "post.md"
@@ -56,6 +58,51 @@ def main():
     tree_path.write_text(json.dumps(tree, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"✓ tree.json обновлён (всего постов: {len(tree)})")
 
+    # === СОЗДАНИЕ DISCUSSION ДЛЯ НОВОГО ПОСТА ===
+    token = None
+    token_path = pathlib.Path.home() / "git.txt"
+    if token_path.exists():
+        token = token_path.read_text().strip()
+
+    if token:
+        print("\n=== Создание Discussion для нового поста ===")
+        try:
+            url = "https://api.github.com/graphql"
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Получаем ID репозитория
+            repo_query = 'query { repository(owner: "x2v0", name: "x2v0.github.io") { id } }'
+            repo_resp = requests.post(url, json={"query": repo_query}, headers=headers)
+            
+            if "data" in repo_resp.json():
+                repo_id = repo_resp.json()["data"]["repository"]["id"]
+                
+                # Создаём Discussion
+                create_query = """
+                mutation($repoId: ID!, $categoryId: ID!, $title: String!, $body: String!) {
+                  createDiscussion(input: {repositoryId: $repoId, categoryId: $categoryId, title: $title, body: $body}) {
+                    discussion { id title }
+                  }
+                }
+                """
+                create_vars = {
+                    "repoId": repo_id,
+                    "categoryId": "DIC_kwDOFNRB_84DJ5jS",
+                    "title": new_post["id"],
+                    "body": f"Обсуждение поста: {subject}"
+                }
+                create_resp = requests.post(url, json={"query": create_query, "variables": create_vars}, headers=headers)
+                
+                if "errors" in create_resp.json():
+                    print(f"⚠ Discussion не создан: {create_resp.json()['errors'][0]['message']}")
+                else:
+                    print(f"✓ Discussion создан для {new_post['id']}")
+        except Exception as e:
+            print(f"⚠ Не удалось создать Discussion: {e}")
+    else:
+        print("⚠ Токен не найден (~/git.txt). Discussion не создан.")
+
+    # === ПУШ НА GITHUB ===
     print("\n=== Пуш на GitHub ===")
     subprocess.run(["git", "add", "-A"])
     subprocess.run(["git", "commit", "-m", f"feat: add post '{subject}'"])
