@@ -4,7 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Блог — Валерий Онучин</title>
-    <script src="./marked.min.js"></script>
+    <script src="./marked.min.js">
+        function copyLink(e, postId) {
+            e.preventDefault();
+            const url = window.location.origin + window.location.pathname.replace('index.html', '') + 'comments.html?id=' + postId;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Ссылка скопирована!');
+            }).catch(err => {
+                alert('Ошибка копирования: ' + err);
+            });
+        }
+
+        function copyText(e, postId) {
+            e.preventDefault();
+            const node = allNodes.find(n => n.id === postId);
+            if (!node) return;
+            
+            // Формируем текст для копирования
+            const text = `# ${node.subject}\n\n${node.body}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Текст поста скопирован!');
+            }).catch(err => {
+                alert('Ошибка копирования: ' + err);
+            });
+        }
+
+        // Простое уведомление (тост)
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = 'position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 20px; border-radius: 8px; z-index: 9999; font-size: 14px;';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+    </script>
     <style>
         :root {
             --bg: #f5f3eb;
@@ -70,6 +105,18 @@
         .back-link { display: inline-block; margin-bottom: 20px; color: var(--accent); text-decoration: none; font-weight: bold; }
         .back-link:hover { text-decoration: underline; }
     
+    
+        .icon-btn {
+            font-size: 18px;
+            text-decoration: none;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .icon-btn:hover {
+            opacity: 1;
+        }
+
     </style>
 </head>
 <body>
@@ -186,6 +233,41 @@
             );
             render(filtered);
         });
+    
+        function copyLink(e, postId) {
+            e.preventDefault();
+            const url = window.location.origin + window.location.pathname.replace('index.html', '') + 'comments.html?id=' + postId;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Ссылка скопирована!');
+            }).catch(err => {
+                alert('Ошибка копирования: ' + err);
+            });
+        }
+
+        function copyText(e, postId) {
+            e.preventDefault();
+            const node = allNodes.find(n => n.id === postId);
+            if (!node) return;
+            
+            // Формируем текст для копирования
+            const text = `# ${node.subject}\n\n${node.body}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Текст поста скопирован!');
+            }).catch(err => {
+                alert('Ошибка копирования: ' + err);
+            });
+        }
+
+        // Простое уведомление (тост)
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = 'position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 20px; border-radius: 8px; z-index: 9999; font-size: 14px;';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
     </script>
 </body>
 </html>
