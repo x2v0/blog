@@ -149,30 +149,21 @@
             }
         }
 
-        function loadGiscus(postId) {
-            // Очищаем ID от недопустимых символов (оставляем только буквы, цифры и дефисы)
+                function loadGiscus(postId) {
             const safeId = postId.replace(/[^a-zA-Z0-9_-]/g, '');
-            
             const container = document.getElementById('giscus-' + postId);
             if (!container || container.innerHTML !== '') return;
             
-            const script = document.createElement('script');
-            script.src = 'https://giscus.app/client.js';
-            script.setAttribute('data-repo', 'x2v0/x2v0.github.io');
-            script.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkzNDk0NTQ4NDc=');
-            script.setAttribute('data-category', 'Blog comments');
-            script.setAttribute('data-category-id', 'DIC_kwDOFNRB_84DJ5jS');
-            script.setAttribute('data-mapping', 'specific');
-            script.setAttribute('data-term', safeId);
-            script.setAttribute('data-strict', '0');
-            script.setAttribute('data-reactions-enabled', '1');
-            script.setAttribute('data-emit-metadata', '0');
-            script.setAttribute('data-input-position', 'bottom');
-            script.setAttribute('data-theme', 'preferred_color_scheme');
-            script.setAttribute('data-lang', 'ru');
-            script.setAttribute('crossorigin', 'anonymous');
-            script.async = true;
-            container.appendChild(script);
+            // Создаём iframe с URL Giscus
+            const url = `https://giscus.app/ru/widget?repo=x2v0%2Fx2v0.github.io&repoId=MDEwOlJlcG9zaXRvcnkzNDk0NTQ4NDc%3D&category=Blog+comments&categoryId=DIC_kwDOFNRB_84DJ5jS&mapping=specific&term=${encodeURIComponent(safeId)}&strict=0&reactionsEnabled=1&emitMetadata=0&inputPosition=bottom&theme=preferred_color_scheme&lang=ru`;
+            
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.style.width = '100%';
+            iframe.style.border = 'none';
+            iframe.style.minHeight = '200px';
+            iframe.setAttribute('scrolling', 'no');
+            container.appendChild(iframe);
         }
 
         function highlight(text, q) {
