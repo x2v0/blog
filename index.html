@@ -142,6 +142,10 @@
                     <div class="post-preview" id="preview-${idx}">${highlight(preview, query)}</div>
                     <div class="post-full" id="full-${idx}">${fullHtml}</div>
                     <a href="#" class="toggle-btn" id="btn-${idx}" onclick="togglePost(event, ${idx})">Читать полностью →</a>
+                    <div class="discussion-container" id="discussion-${idx}" style="display:none; margin-top:20px;">
+                        <h4 style="font-family: monospace; font-size: 16px; margin-bottom: 10px;">💬 Обсуждение</h4>
+                        <div id="giscus-${idx}"></div>
+                    </div>
                     <div id="comments-${idx}" class="comments-container" style="display:none; margin-top:15px;">
                         <div id="utterances-${idx}"></div>
                     </div>
