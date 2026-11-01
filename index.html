@@ -66,11 +66,16 @@
             text-decoration: underline;
         }
     
+    
+        .back-link { display: inline-block; margin-bottom: 20px; color: var(--accent); text-decoration: none; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+    
     </style>
 </head>
 <body>
     <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
     <div class="container">
+        <a href="https://x2v0.github.io/" class="back-link">← На главную</a>
         <div class="header">Блог</div>
         <input type="text" id="search-input" placeholder="🔍 Поиск..." style="width:100%; padding:15px; border:1px solid var(--border); border-radius:10px; font-size:16px; margin-bottom:20px; box-sizing:border-box; background:var(--card-bg); color:var(--text);">
         <div id="feed"><p>Загрузка...</p></div>
@@ -116,7 +121,8 @@
                 div.className = 'post-node';
                 div.id = 'post-' + idx;
 
-                const preview = (node.body || '').substring(0, 200) + '...';
+                const cleanBody = (node.body || '').replace(/^#+\s+/gm, '').replace(/\*\*/g, '');
+                const preview = cleanBody.substring(0, 200) + '...';
                 let fullHtml = node.body || '';
                 if (typeof marked !== 'undefined') {
                     fullHtml = marked.parse(fullHtml);
