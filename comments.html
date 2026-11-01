@@ -33,19 +33,19 @@
 
         // Загружаем Giscus
         const script = document.createElement('script');
-        script.src = 'https://giscus.app/client.js';
-        script.setAttribute('data-repo', 'x2v0/x2v0.github.io');
-        script.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkzNDk0NTQ4NDc=');
-        script.setAttribute('data-category', 'Blog comments');
-        script.setAttribute('data-category-id', 'DIC_kwDOFNRB_84DJ5jS');
-        script.setAttribute('data-mapping', 'specific');
-        script.setAttribute('data-term', postId);
-        script.setAttribute('data-strict', '0');
-        script.setAttribute('data-reactions-enabled', '1');
-        script.setAttribute('data-emit-metadata', '0');
-        script.setAttribute('data-input-position', 'bottom');
-        script.setAttribute('data-theme', 'preferred_color_scheme');
-        script.setAttribute('data-lang', 'ru');
+        script.src = 'https://utteranc.es/client.js';
+        script.setAttribute('repo', 'x2v0/x2v0.github.io');
+        
+        
+        
+        
+        script.setAttribute('issue-term', postId);
+        
+        
+        
+        
+        script.setAttribute('theme', 'preferred-color-scheme');
+        
         script.setAttribute('crossorigin', 'anonymous');
         script.async = true;
         document.getElementById('giscus-container').appendChild(script);
