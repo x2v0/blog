@@ -4,47 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Блог — Валерий Онучин</title>
-    <script src="./marked.min.js">
-        function copyLink(e, postId) {
-            e.preventDefault();
-            const url = window.location.origin + window.location.pathname.replace('index.html', '') + 'comments.html?id=' + postId;
-            navigator.clipboard.writeText(url).then(() => {
-                showToast('Ссылка скопирована!');
-            }).catch(err => {
-                alert('Ошибка копирования: ' + err);
-            });
-        }
-
-        function copyText(e, postId) {
-            e.preventDefault();
-            const node = allNodes.find(n => n.id === postId);
-            if (!node) return;
-            
-            // Формируем текст для копирования
-            const text = `# ${node.subject}\n\n${node.body}`;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Текст поста скопирован!');
-            }).catch(err => {
-                alert('Ошибка копирования: ' + err);
-            });
-        }
-
-        // Простое уведомление (тост)
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.textContent = message;
-            toast.style.cssText = 'position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 20px; border-radius: 8px; z-index: 9999; font-size: 14px;';
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
-        }
-
-    
-        // Кнопка Наверх
-        
-        });
-
-    </script>
+    <script src="./marked.min.js"></script>
     <style>
         :root {
             --bg: #f5f3eb;
@@ -71,6 +31,7 @@
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; transition: background 0.3s, color 0.3s; }
         .container { max-width: 900px; margin: 0 auto; }
         .header { font-family: monospace; font-size: 32px; margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: var(--accent); text-decoration: none; font-weight: bold; }
         .post-node { margin-bottom: 20px; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--card-bg); }
         .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: var(--fg3); }
         .post-author { font-weight: bold; color: var(--text); }
@@ -87,71 +48,25 @@
         .post-full code { background: var(--code-bg); color: var(--code-text); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
         .post-full pre code { background: transparent; padding: 0; }
         .post-full blockquote { border-left: 4px solid var(--accent); padding-left: 15px; color: var(--fg3); margin: 10px 0; }
-        .toggle-btn { display: inline-block; margin-top: 10px; color: var(--accent); font-weight: bold; cursor: pointer; text-decoration: none; }
+        .actions { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-top: 15px; }
+        .btn-link { color: var(--accent); font-weight: bold; text-decoration: none; cursor: pointer; }
+        .btn-link:hover { text-decoration: underline; }
+        .icon-btn { font-size: 18px; text-decoration: none; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+        .icon-btn:hover { opacity: 1; }
         mark { background: #ffeb3b; color: #000; padding: 0 2px; border-radius: 2px; }
-        .discussion-container { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px; }
-        #theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 9999; font-size: 24px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 50%; width: 45px; height: 45px; display: none; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s; }
-        #theme-toggle:hover { transform: scale(1.1); }
-    
-        .feedback-btn {
-            display: inline-block;
-            margin-top: 10px;
-            margin-left: 15px;
-            color: var(--accent);
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .feedback-btn:hover {
-            text-decoration: underline;
-        }
-    
-    
-        .back-link { display: inline-block; margin-bottom: 20px; color: var(--accent); text-decoration: none; font-weight: bold; }
-        .back-link:hover { text-decoration: underline; }
-    
-    
-        .icon-btn {
-            font-size: 18px;
-            text-decoration: none;
-            cursor: pointer;
-            opacity: 0.6;
-            transition: opacity 0.2s;
-        }
-        .icon-btn:hover {
-            opacity: 1;
-        }
 
-    
         #scroll-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            display: none;
-            z-index: 1000;
-            transition: transform 0.2s, opacity 0.2s;
+            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+            border-radius: 50%; background: var(--accent); color: #fff; border: none;
+            font-size: 24px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: none; z-index: 1000;
+            transition: transform 0.2s;
         }
-        #scroll-top:hover {
-            transform: scale(1.1);
-        }
-        #scroll-top.visible {
-            display: block;
-        }
-
+        #scroll-top:hover { transform: scale(1.1); }
+        #scroll-top.visible { display: block; }
     </style>
 </head>
 <body>
-    <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
     <div class="container">
         <a href="https://x2v0.github.io/" class="back-link">← На главную</a>
         <div class="header">Блог</div>
@@ -159,33 +74,33 @@
         <div id="feed"><p>Загрузка...</p></div>
     </div>
 
+    <button id="scroll-top" title="Наверх">↑</button>
+
     <script>
-        // Тема (синхронизация с основным сайтом через localStorage, ключ 'theme')
+        // Тема
         var currentTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
-
-        function toggleTheme() {
-            var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            var newTheme = isDark ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        }
-
         window.addEventListener('storage', function(e) {
-            if (e.key === 'theme') {
-                document.documentElement.setAttribute('data-theme', e.newValue || 'light');
-            }
+            if (e.key === 'theme') document.documentElement.setAttribute('data-theme', e.newValue || 'light');
         });
 
         let allNodes = [];
         let query = '';
 
-        fetch('./tree.json').then(r => r.json()).then(data => {
-            allNodes = data;
-            render(data);
-        }).catch(err => {
-            document.getElementById('feed').innerHTML = '<p style="color:red;">Ошибка: ' + err.message + '</p>';
-        });
+        // Загрузка с защитой от кэша
+        fetch('./tree.json?v=' + Date.now())
+            .then(r => {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.json();
+            })
+            .then(data => {
+                allNodes = data;
+                render(data);
+            })
+            .catch(err => {
+                console.error('Ошибка загрузки:', err);
+                document.getElementById('feed').innerHTML = '<p style="color:red;">Ошибка загрузки постов: ' + err.message + '</p>';
+            });
 
         function render(nodes) {
             const feed = document.getElementById('feed');
@@ -199,6 +114,7 @@
                 div.className = 'post-node';
                 div.id = 'post-' + idx;
 
+                // Очищаем превью от Markdown-заголовков
                 const cleanBody = (node.body || '').replace(/^#+\s+/gm, '').replace(/\*\*/g, '');
                 const preview = cleanBody.substring(0, 200) + '...';
                 let fullHtml = node.body || '';
@@ -212,90 +128,50 @@
                         <span>${node.date}</span>
                     </div>
                     <div class="post-subject">${highlight(node.subject, query)}</div>
-                    <div class="post-preview" id="preview-${node.id}">${highlight(preview, query)}</div>
-                    <div class="post-full" id="full-${node.id}">${fullHtml}</div>
-                    <div style="margin-top: 10px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                        <a href="#" class="toggle-btn" id="btn-${node.id}" onclick="togglePost(event, '${node.id}')">Читать полностью →</a>
-                        <a href="./comments.html?id=${node.id}&title=${encodeURIComponent(node.subject)}" class="feedback-btn" target="_blank">💬 Обсудить</a>
+                    <div class="post-preview" id="preview-${idx}">${highlight(preview, query)}</div>
+                    <div class="post-full" id="full-${idx}">${fullHtml}</div>
+                    <div class="actions">
+                        <a href="#" class="btn-link" id="btn-${idx}" onclick="togglePost(event, ${idx})">Читать полностью →</a>
+                        <a href="./comments.html?id=${node.id}&title=${encodeURIComponent(node.subject)}" class="btn-link" target="_blank">💬 Обсудить</a>
                         <a href="#" class="icon-btn" onclick="copyLink(event, '${node.id}'); return false;" title="Скопировать ссылку">🔗</a>
                         <a href="#" class="icon-btn" onclick="copyText(event, '${node.id}'); return false;" title="Скопировать текст">📋</a>
                     </div>
-                    
-                    
                 `;
                 feed.appendChild(div);
             });
         }
 
-        function togglePost(e, postId) {
+        function togglePost(e, idx) {
             e.preventDefault();
-            const preview = document.getElementById('preview-' + postId);
-            const full = document.getElementById('full-' + postId);
-            const btn = document.getElementById('btn-' + postId);
-            const discussion = document.getElementById('discussion-' + postId);
+            const preview = document.getElementById('preview-' + idx);
+            const full = document.getElementById('full-' + idx);
+            const btn = document.getElementById('btn-' + idx);
 
             if (full.style.display === 'block') {
                 full.style.display = 'none';
                 preview.style.display = 'block';
-                if (discussion) discussion.style.display = 'none';
                 btn.textContent = 'Читать полностью →';
             } else {
                 full.style.display = 'block';
                 preview.style.display = 'none';
-                if (discussion) {
-                    discussion.style.display = 'block';
-                    loadGiscus(postId);
-                }
                 btn.textContent = '← К списку статей';
             }
         }
 
-                                        
-        function highlight(text, q) {
-            if (!q) return text;
-            const safeQ = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            return text.replace(new RegExp('(' + safeQ + ')', 'gi'), '<mark>$1</mark>');
-        }
-
-        document.getElementById('search-input').addEventListener('input', function(e) {
-            query = e.target.value.trim();
-            if (!query) {
-                render(allNodes);
-                return;
-            }
-            const filtered = allNodes.filter(n =>
-                (n.subject || '').toLowerCase().includes(query.toLowerCase()) ||
-                (n.body || '').toLowerCase().includes(query.toLowerCase())
-            );
-            render(filtered);
-        });
-    
         function copyLink(e, postId) {
             e.preventDefault();
             const url = window.location.origin + window.location.pathname.replace('index.html', '') + 'comments.html?id=' + postId;
-            navigator.clipboard.writeText(url).then(() => {
-                showToast('Ссылка скопирована!');
-            }).catch(err => {
-                alert('Ошибка копирования: ' + err);
-            });
+            navigator.clipboard.writeText(url).then(() => showToast('Ссылка скопирована!'));
         }
 
         function copyText(e, postId) {
             e.preventDefault();
             const node = allNodes.find(n => n.id === postId);
             if (!node) return;
-            
-            // Формируем текст для копирования
             const text = `# ${node.subject}\n\n${node.body}`;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Текст поста скопирован!');
-            }).catch(err => {
-                alert('Ошибка копирования: ' + err);
-            });
+            navigator.clipboard.writeText(text).then(() => showToast('Текст поста скопирован!'));
         }
 
-        // Простое уведомление (тост)
         function showToast(message) {
             const toast = document.createElement('div');
             toast.textContent = message;
@@ -304,12 +180,31 @@
             setTimeout(() => toast.remove(), 2000);
         }
 
-    
-        // Кнопка Наверх
-        
+        function highlight(text, q) {
+            if (!q) return text;
+            const safeQ = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return text.replace(new RegExp('(' + safeQ + ')', 'gi'), '<mark>$1</mark>');
+        }
+
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            query = e.target.value.trim();
+            if (!query) { render(allNodes); return; }
+            const filtered = allNodes.filter(n =>
+                (n.subject || '').toLowerCase().includes(query.toLowerCase()) ||
+                (n.body || '').toLowerCase().includes(query.toLowerCase())
+            );
+            render(filtered);
         });
 
+        // Кнопка Наверх
+        const scrollTopBtn = document.getElementById('scroll-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) scrollTopBtn.classList.add('visible');
+            else scrollTopBtn.classList.remove('visible');
+        });
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     </script>
-<button id="scroll-top" title="Наверх">↑</button>
 </body>
 </html>
