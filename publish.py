@@ -34,8 +34,9 @@ def main():
     tree = json.loads(tree_path.read_text(encoding="utf-8")) if tree_path.exists() else []
 
     today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    new_id = f"post-{len(tree)}"  # индекс нового поста
     new_post = {
-        "id": f"post-{slug}",
+        "id": new_id,
         "in_reply_to": "",
         "references": [],
         "from": "Автор",
@@ -46,10 +47,10 @@ def main():
     }
 
     existing_ids = [n.get("id", "") for n in tree]
-    if new_post["id"] in existing_ids:
+    if new_id in existing_ids:
         print(f"⚠ Пост с id {new_post['id']} уже есть. Обновляю...")
         for i, n in enumerate(tree):
-            if n.get("id") == new_post["id"]:
+            if n.get("id") == new_id:
                 tree[i] = new_post
                 break
     else:
@@ -88,7 +89,7 @@ def main():
                 create_vars = {
                     "repoId": repo_id,
                     "categoryId": "DIC_kwDOFNRB_84DJ5jS",
-                    "title": new_post["id"],
+                    "title": new_id,
                     "body": f"Обсуждение поста: {subject}"
                 }
                 create_resp = requests.post(url, json={"query": create_query, "variables": create_vars}, headers=headers)
