@@ -117,10 +117,7 @@
                     <div class="post-preview" id="preview-${node.id}">${highlight(preview, query)}</div>
                     <div class="post-full" id="full-${node.id}">${fullHtml}</div>
                     <a href="#" class="toggle-btn" id="btn-${node.id}" onclick="togglePost(event, '${node.id}')">Читать полностью →</a>
-                    <div class="discussion-container" id="discussion-${node.id}" style="display:none;">
-                        <h4 style="font-family: monospace; font-size: 16px; margin-bottom: 10px;">💬 Обсуждение</h4>
-                        <div id="giscus-${node.id}"></div>
-                    </div>
+                    
                 `;
                 feed.appendChild(div);
             });
@@ -149,43 +146,7 @@
             }
         }
 
-                                        function loadGiscus(postId) {
-            const safeId = postId.replace(/[^a-zA-Z0-9_-]/g, '');
-            const container = document.getElementById('giscus-' + postId);
-            if (!container) return;
-            
-            // 1. Очищаем контейнер и удаляем старый скрипт
-            container.innerHTML = '';
-            const oldScript = document.querySelector('script[src="https://giscus.app/client.js"]');
-            if (oldScript) oldScript.remove();
-            
-            // 2. Создаём новый скрипт
-            const script = document.createElement('script');
-            script.src = 'https://giscus.app/client.js';
-            script.setAttribute('data-repo', 'x2v0/x2v0.github.io');
-            script.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkzNDk0NTQ4NDc=');
-            script.setAttribute('data-category', 'Blog comments');
-            script.setAttribute('data-category-id', 'DIC_kwDOFNRB_84DJ5jS');
-            script.setAttribute('data-mapping', 'specific');
-            script.setAttribute('data-term', safeId);
-            script.setAttribute('data-strict', '0');
-            script.setAttribute('data-reactions-enabled', '1');
-            script.setAttribute('data-emit-metadata', '0');
-            script.setAttribute('data-input-position', 'bottom');
-            script.setAttribute('data-theme', 'preferred_color_scheme');
-            script.setAttribute('data-lang', 'ru');
-            script.setAttribute('crossorigin', 'anonymous');
-            script.async = true;
-            
-            // ВАЖНО: Giscus ищет контейнер с id="giscus" по умолчанию.
-            // Мы создаём скрытый контейнер с id="giscus" и перемещаем его в наш блок.
-            const hiddenContainer = document.createElement('div');
-            hiddenContainer.id = 'giscus';
-            container.appendChild(hiddenContainer);
-            
-            document.head.appendChild(script);
-        }
-
+                                        
         function highlight(text, q) {
             if (!q) return text;
             const safeQ = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
