@@ -39,6 +39,20 @@
             setTimeout(() => toast.remove(), 2000);
         }
 
+    
+        // Кнопка Наверх
+        const scrollTopBtn = document.getElementById('scroll-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
     </script>
     <style>
         :root {
@@ -115,6 +129,32 @@
         }
         .icon-btn:hover {
             opacity: 1;
+        }
+
+    
+        #scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        #scroll-top:hover {
+            transform: scale(1.1);
+        }
+        #scroll-top.visible {
+            display: block;
         }
 
     </style>
@@ -273,6 +313,21 @@
             setTimeout(() => toast.remove(), 2000);
         }
 
+    
+        // Кнопка Наверх
+        const scrollTopBtn = document.getElementById('scroll-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
     </script>
+<button id="scroll-top" title="Наверх">↑</button>
 </body>
 </html>
