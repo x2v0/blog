@@ -114,24 +114,24 @@
                         <span>${node.date}</span>
                     </div>
                     <div class="post-subject">${highlight(node.subject, query)}</div>
-                    <div class="post-preview" id="preview-${idx}">${highlight(preview, query)}</div>
-                    <div class="post-full" id="full-${idx}">${fullHtml}</div>
-                    <a href="#" class="toggle-btn" id="btn-${idx}" onclick="togglePost(event, ${idx})">Читать полностью →</a>
-                    <div class="discussion-container" id="discussion-${idx}" style="display:none;">
+                    <div class="post-preview" id="preview-${node.id}">${highlight(preview, query)}</div>
+                    <div class="post-full" id="full-${node.id}">${fullHtml}</div>
+                    <a href="#" class="toggle-btn" id="btn-${node.id}" onclick="togglePost(event, '${node.id}')">Читать полностью →</a>
+                    <div class="discussion-container" id="discussion-${node.id}" style="display:none;">
                         <h4 style="font-family: monospace; font-size: 16px; margin-bottom: 10px;">💬 Обсуждение</h4>
-                        <div id="giscus-${idx}"></div>
+                        <div id="giscus-${node.id}"></div>
                     </div>
                 `;
                 feed.appendChild(div);
             });
         }
 
-        function togglePost(e, idx) {
+        function togglePost(e, postId) {
             e.preventDefault();
-            const preview = document.getElementById('preview-' + idx);
-            const full = document.getElementById('full-' + idx);
-            const btn = document.getElementById('btn-' + idx);
-            const discussion = document.getElementById('discussion-' + idx);
+            const preview = document.getElementById('preview-' + postId);
+            const full = document.getElementById('full-' + postId);
+            const btn = document.getElementById('btn-' + postId);
+            const discussion = document.getElementById('discussion-' + postId);
 
             if (full.style.display === 'block') {
                 full.style.display = 'none';
@@ -143,17 +143,17 @@
                 preview.style.display = 'none';
                 if (discussion) {
                     discussion.style.display = 'block';
-                    loadGiscus(idx);
+                    loadGiscus(postId);
                 }
                 btn.textContent = '← К списку статей';
             }
         }
 
-        function loadGiscus(idx) {
-            const container = document.getElementById('giscus-' + idx);
+        function loadGiscus(postId) {
+            const container = document.getElementById('giscus-' + postId);
             if (!container || container.innerHTML !== '') return;
             
-            const postId = 'post-' + idx;
+            // postId уже передан
             
             const script = document.createElement('script');
             script.src = 'https://giscus.app/client.js';
