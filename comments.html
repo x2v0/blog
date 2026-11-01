@@ -5,9 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Обсуждение — Блог</title>
     <style>
-        :root { --bg: #f5f3eb; --text: #333; --card-bg: #fff; --border: #ddd; --accent: #0288d1; }
-        [data-theme="dark"] { --bg: #121212; --text: #e0e0e0; --card-bg: #1e1e1e; --border: #333; --accent: #4fc3f7; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        :root {
+            --bg: #f5f3eb;
+            --text: #333;
+            --card-bg: #fff;
+            --border: #ddd;
+            --accent: #0288d1;
+        }
+        [data-theme="dark"] {
+            --bg: #121212;
+            --text: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --border: #333;
+            --accent: #4fc3f7;
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; transition: background 0.3s, color 0.3s; }
         .container { max-width: 900px; margin: 0 auto; }
         .header { font-family: monospace; font-size: 24px; margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
         .back-link { display: inline-block; margin-bottom: 20px; color: var(--accent); text-decoration: none; font-weight: bold; }
@@ -24,7 +36,7 @@
     </div>
 
     <script>
-        // 1. Тема
+        // 1. Устанавливаем тему для СТРАНИЦЫ (и Giscus)
         var currentTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
 
@@ -38,7 +50,7 @@
         // 3. Giscus с синхронизацией темы
         function loadGiscus(theme) {
             const container = document.getElementById('giscus-container');
-            container.innerHTML = ''; // Очищаем перед загрузкой
+            container.innerHTML = '';
             
             const script = document.createElement('script');
             script.src = 'https://giscus.app/client.js';
@@ -52,7 +64,7 @@
             script.setAttribute('data-reactions-enabled', '1');
             script.setAttribute('data-emit-metadata', '0');
             script.setAttribute('data-input-position', 'bottom');
-            script.setAttribute('data-theme', theme); // Передаём тему
+            script.setAttribute('data-theme', theme); // 'dark' или 'light'
             script.setAttribute('data-lang', 'ru');
             script.setAttribute('crossorigin', 'anonymous');
             script.async = true;
