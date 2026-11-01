@@ -149,19 +149,17 @@
             }
         }
 
-                                function loadGiscus(postId) {
+                                        function loadGiscus(postId) {
             const safeId = postId.replace(/[^a-zA-Z0-9_-]/g, '');
             const container = document.getElementById('giscus-' + postId);
             if (!container) return;
             
-            // 1. Удаляем старый скрипт Giscus из <head>, если он есть
+            // 1. Очищаем контейнер и удаляем старый скрипт
+            container.innerHTML = '';
             const oldScript = document.querySelector('script[src="https://giscus.app/client.js"]');
             if (oldScript) oldScript.remove();
             
-            // 2. Очищаем контейнер
-            container.innerHTML = '';
-            
-            // 3. Создаём новый скрипт и добавляем его в <head>
+            // 2. Создаём новый скрипт
             const script = document.createElement('script');
             script.src = 'https://giscus.app/client.js';
             script.setAttribute('data-repo', 'x2v0/x2v0.github.io');
@@ -179,9 +177,11 @@
             script.setAttribute('crossorigin', 'anonymous');
             script.async = true;
             
-            // Giscus ищет контейнер с id="giscus" (по умолчанию)
-            // Но мы передаём наш контейнер через data-container
-            script.setAttribute('data-container', 'giscus-' + postId);
+            // ВАЖНО: Giscus ищет контейнер с id="giscus" по умолчанию.
+            // Мы создаём скрытый контейнер с id="giscus" и перемещаем его в наш блок.
+            const hiddenContainer = document.createElement('div');
+            hiddenContainer.id = 'giscus';
+            container.appendChild(hiddenContainer);
             
             document.head.appendChild(script);
         }
