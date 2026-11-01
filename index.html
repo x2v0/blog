@@ -8,10 +8,7 @@
         
 
     
-        // Кнопка Наверх
-        document.getElementById('scroll-top').addEventListener('click', function() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+        
 
     </script>
     <style>
@@ -74,7 +71,7 @@
             border-radius: 50%; background: var(--accent); color: #fff; border: none;
             font-size: 24px; font-weight: bold; cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: block; z-index: 99999;
-            opacity: 0.9; transition: opacity 0.2s;
+            opacity: 0.9; transition: opacity 0.2s; pointer-events: auto !important;
         }
         #scroll-top:hover { opacity: 1; }
         #scroll-top:hover { opacity: 1; }
@@ -216,12 +213,9 @@
         
 
     
-        // Кнопка Наверх
-        document.getElementById('scroll-top').addEventListener('click', function() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+        
 
     </script>
-<button id="scroll-top" title="Наверх">↑</button>
+<button id="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" title="Наверх">↑</button>
 </body>
 </html>
