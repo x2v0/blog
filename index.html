@@ -21,17 +21,7 @@
             btn.addEventListener("click", function() {
                 window.scrollTo({ top: 0, behavior: "smooth" });
 
-                // Если включен режим ?admin=1, добавляем кнопку управления комментариями Giscus
-                if (window.location.search.includes('admin=1')) {
-                    const adminDiv = document.createElement('div');
-                    adminDiv.style.marginTop = '10px';
-                    adminDiv.innerHTML = `
-                        <a href="comments.html?id=${node.id}" target="_blank" style="display: inline-block; background: #6e5494; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: bold;">
-                            💬 Управление комментариями (Giscus)
-                        </a>
-                    `;
-                    div.appendChild(adminDiv);
-                }
+                
 
             });
         });
@@ -296,6 +286,24 @@
 <button id="scroll-top" title="Наверх">↑</button>
 
     
+
+
+    <script>
+        // Если в URL есть ?admin=1, показываем кнопку перехода к обсуждениям на GitHub
+        if (window.location.search.includes('admin=1')) {
+            document.addEventListener('DOMContentLoaded', () => {
+                const adminBar = document.createElement('div');
+                adminBar.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: var(--surface, #fff); padding: 12px; border: 1px solid var(--rule, #ccc); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);';
+                adminBar.innerHTML = `
+                    <a href="https://github.com/x2v0/blog/discussions" target="_blank" style="display: flex; align-items: center; gap: 8px; background: #6e5494; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; font-family: system-ui, sans-serif; font-size: 14px; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
+                        <svg height="20" viewBox="0 0 16 16" width="20" fill="currentColor"><path d="M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25v-8.5C0 1.784.784 1 1.75 1ZM1.5 2.75v8.5c0 .138.112.25.25.25h2.5a.75.75 0 0 1 .75.75v1.19l2.72-2.72a.75.75 0 0 1 .53-.22h5.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Z"></path></svg>
+                        Управление комментариями (GitHub)
+                    </a>
+                `;
+                document.body.appendChild(adminBar);
+            });
+        }
+    </script>
 
 </body>
 </html>
