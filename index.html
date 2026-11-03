@@ -14,6 +14,16 @@
             --accent: #0288d1;
             --border: #333;
         }
+
+        [data-theme="light"] {
+            --bg: #f5f3eb;
+            --surface: #ffffff;
+            --text: #333333;
+            --text-muted: #666666;
+            --accent: #0288d1;
+            --border: #dddddd;
+        }
+
         body {
             background-color: var(--bg);
             color: var(--text);
@@ -188,6 +198,14 @@
     #scroll-top:hover { opacity: 1; }
     #scroll-top.visible { display: block; }
 </style>
+
+    <script>
+    (function() {
+        var savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+    </script>
+
 </head>
 <body>
     <div class="container">
