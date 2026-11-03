@@ -58,7 +58,14 @@ def main():
     today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     
     # ИСПОЛЬЗУЕМ ЧИСЛОВОЙ ID (для Giscus)
-    new_id = f"post-{len(tree)}"
+    max_id = 0
+    for p in tree:
+        if p.get("id", "").startswith("post-"):
+            try:
+                num = int(p["id"].split("-")[1])
+                if num > max_id: max_id = num
+            except: pass
+    new_id = f"post-{max_id + 1}"
     new_post = {
         "id": new_id,
         "in_reply_to": "",

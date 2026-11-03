@@ -177,6 +177,16 @@
         .btn-github svg {
             fill: currentColor;
         }
+
+    #scroll-top {
+        position: fixed; bottom: 80px; right: 20px; width: 50px; height: 50px;
+        border-radius: 50%; background: #0288d1; color: #fff; border: none;
+        font-size: 24px; font-weight: bold; cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: none; z-index: 99999;
+        opacity: 0.9; transition: opacity 0.2s;
+    }
+    #scroll-top:hover { opacity: 1; }
+    #scroll-top.visible { display: block; }
 </style>
 </head>
 <body>
@@ -185,7 +195,7 @@
             <h1>Блог</h1>
         </header>
         
-        <input type="text" id="search" class="search-box" placeholder="🔍 Поиск...">
+        <input type="text" id="search-input" class="search-box" placeholder="🔍 Поиск...">
         
         <div id="feed">
             <p>Загрузка...</p>
@@ -286,7 +296,7 @@
         }
 
         // Поиск
-        document.getElementById('search').addEventListener('input', (e) => {
+        document.getElementById('search-input').addEventListener('input', (e) => {
             currentQuery = e.target.value.toLowerCase();
             const filtered = allPosts.filter(p => 
                 (p.subject || '').toLowerCase().includes(currentQuery) || 
@@ -334,5 +344,21 @@
             document.body.appendChild(adminBar);
         }
     </script>
+<button id="scroll-top" title="Наверх">↑</button>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var btn = document.getElementById("scroll-top");
+        if(!btn) return;
+        window.addEventListener("scroll", function() {
+            if (window.scrollY > 300) btn.classList.add("visible");
+            else btn.classList.remove("visible");
+        });
+        btn.addEventListener("click", function() {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    });
+    </script>
+    
 </body>
 </html>
