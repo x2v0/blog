@@ -10,7 +10,6 @@ def run_tests():
     """Запускает тесты из основного репозитория перед пушем."""
     print("\n=== Запуск тестов (site.test.js) ===")
     try:
-        # Путь к тестам в основном репозитории
         tests_dir = pathlib.Path.home() / "x2v0.github.io"
         result = subprocess.run(
             ["node", "--test", "tests/site.test.js"],
@@ -27,7 +26,7 @@ def run_tests():
         return True
     except Exception as e:
         print(f"⚠ Не удалось запустить тесты: {e}")
-        return True  # Продолжаем, если Node.js не установлен
+        return True
 
 def main():
     post_file = "post.md"
@@ -71,27 +70,15 @@ def main():
         "children": []
     }
 
-    existing_ids = [n.get("id", "") for n in tree]
-    if new_id in existing_ids:
-        print(f"⚠ Пост с id {new_id} уже есть. Обновляю...")
-        for i, n in enumerate(tree):
-            if n.get("id") == new_id:
-                tree[i] = new_post
-                break
-    else:
-        tree.insert(0, new_post)
-
-    tree_path.write_text(json.dumps(tree, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"✓ tree.json обновлён (всего постов: {len(tree)})")
-
-    # === СОЗДАНИЕ DISCUSSION ДЛЯ НОВОГО ПОСТА ===
+    # === СОЗДАНИЕ DISCUSSION И ПОЛУЧЕНИЕ НОМЕРА ===
     token = None
     token_path = pathlib.Path.home() / "git.txt"
     if token_path.exists():
         token = token_path.read_text().strip()
 
+    disc_number = None
     if token:
-        print("\n=== Создание Discussion для нового поста ===")
+        print("\n=== Создание Discussion и получение номера ===")
         try:
             url = "https://api.github.com/graphql"
             headers = {"Authorization": f"Bearer {token}"}
@@ -103,11 +90,11 @@ def main():
             if "data" in repo_resp.json():
                 repo_id = repo_resp.json()["data"]["repository"]["id"]
 
-                # Создаём Discussion
+                # Создаём Discussion и запрашиваем номер (number)
                 create_query = """
                 mutation($repoId: ID!, $categoryId: ID!, $title: String!, $body: String!) {
                   createDiscussion(input: {repositoryId: $repoId, categoryId: $categoryId, title: $title, body: $body}) {
-                    discussion { id title }
+                    discussion { id number }
                   }
                 }
                 """
@@ -122,11 +109,27 @@ def main():
                 if "errors" in create_resp.json():
                     print(f"⚠ Discussion не создан: {create_resp.json()['errors'][0]['message']}")
                 else:
-                    print(f"✓ Discussion создан для {new_id}")
+                    disc_number = create_resp.json()["data"]["createDiscussion"]["discussion"]["number"]
+                    print(f"✓ Discussion #{disc_number} создан для {new_id}")
+                    new_post["discussion_number"] = disc_number # Сохраняем номер в пост
         except Exception as e:
             print(f"⚠ Не удалось создать Discussion: {e}")
     else:
         print("⚠ Токен не найден (~/git.txt). Discussion не создан.")
+
+    # === СОХРАНЕНИЕ TREE.JSON ===
+    existing_ids = [n.get("id", "") for n in tree]
+    if new_id in existing_ids:
+        print(f"⚠ Пост с id {new_id} уже есть. Обновляю...")
+        for i, n in enumerate(tree):
+            if n.get("id") == new_id:
+                tree[i] = new_post
+                break
+    else:
+        tree.insert(0, new_post)
+
+    tree_path.write_text(json.dumps(tree, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"✓ tree.json обновлён (всего постов: {len(tree)})")
 
     # === ЗАПУСК ТЕСТОВ ПЕРЕД ПУШЕМ ===
     if not run_tests():
@@ -139,7 +142,8 @@ def main():
     subprocess.run(["git", "commit", "-m", f"feat: add post '{subject}'"])
     subprocess.run(["git", "push", "origin", "main"])
     
-    print(f"\n🔗 Ссылка на обсуждение: https://x2v0.github.io/blog/comments.html?id={new_id}")
+    if disc_number:
+        print(f"\n🔗 Прямая ссылка на обсуждение: https://github.com/x2v0/x2v0.github.io/discussions/{disc_number}")
     print("✓ Готово! Пост опубликован.")
 
 if __name__ == "__main__":
