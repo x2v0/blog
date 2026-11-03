@@ -25,6 +25,22 @@
         .back-link { display: inline-block; margin-bottom: 20px; color: var(--accent); text-decoration: none; font-weight: bold; }
         .post-title { font-size: 20px; margin-bottom: 20px; color: var(--accent); }
         #giscus-container { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); min-height: 200px; }
+
+        .hint-box {
+            background: var(--card-bg);
+            border-left: 4px solid var(--accent);
+            color: var(--text);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-top: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .hint-box strong { color: var(--accent); }
+        .hint-box code { background: var(--bg); padding: 2px 4px; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -32,6 +48,11 @@
         <a href="./index.html" class="back-link">← Назад к блогу</a>
         <div class="header">Обсуждение</div>
         <div id="post-title" class="post-title">Загрузка...</div>
+                <div class="hint-box">
+            💡 <strong>Управление комментариями:</strong><br>
+            Если вы хотите <strong>отредактировать</strong> или <strong>удалить</strong> свой комментарий, нажмите на три точки <code>...</code> справа от него (или на время публикации). Это перенаправит вас на GitHub, где вы сможете управлять своими сообщениями.
+        </div>
+        
         <div id="giscus-container"></div>
     </div>
 
