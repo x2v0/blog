@@ -3,174 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Блог — Валерий Онучин</title>
-    <script src="./marked.min.js">
-        
-
-    
-        
-
-    
-        document.addEventListener("DOMContentLoaded", function() {
-            var btn = document.getElementById("scroll-top");
-            if(!btn) return;
-            window.addEventListener("scroll", function() {
-                if (window.scrollY > 300) btn.classList.add("visible");
-                else btn.classList.remove("visible");
-            });
-            btn.addEventListener("click", function() {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-
-                
-
-            });
-        });
-
-    </script>
+    <title>Блог</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            --bg: #f5f3eb;
-            --text: #333;
-            --card-bg: #fff;
-            --border: #ddd;
+            --bg: #1e1e1e;
+            --surface: #252526;
+            --text: #d4d4d4;
+            --text-muted: #888;
             --accent: #0288d1;
-            --fg2: #444;
-            --fg3: #888;
-            --code-bg: #f0f0f0;
-            --code-text: #333;
-        }
-        [data-theme="dark"] {
-            --bg: #121212;
-            --text: #e0e0e0;
-            --card-bg: #1e1e1e;
             --border: #333;
-            --accent: #4fc3f7;
-            --fg2: #b0b0b0;
-            --fg3: #777;
-            --code-bg: #282c34;
-            --code-text: #e0e0e0;
         }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; transition: background 0.3s, color 0.3s; }
-        .container { max-width: 900px; margin: 0 auto; }
-        .header { font-family: monospace; font-size: 32px; margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: var(--accent); text-decoration: none; font-weight: bold; }
-        .post-node { margin-bottom: 20px; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--card-bg); }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: var(--fg3); }
-        .post-author { font-weight: bold; color: var(--text); }
-        .post-subject { font-size: 18px; font-weight: bold; color: var(--accent); margin-bottom: 10px; }
-        .post-preview { font-size: 15px; line-height: 1.6; color: var(--fg2); }
-        .post-full { display: none; font-size: 15px; line-height: 1.6; color: var(--fg2); }
-        .post-full h1 { font-size: 24px; margin-top: 0; color: var(--text); }
-        .post-full h2 { font-size: 20px; margin-top: 20px; color: var(--text); }
-        .post-full h3 { font-size: 18px; margin-top: 15px; color: var(--text); }
-        .post-full p { margin: 10px 0; }
-        .post-full ul, .post-full ol { margin: 10px 0; padding-left: 20px; }
-        .post-full a { color: var(--accent); font-weight: bold; }
-        .post-full pre { background: var(--code-bg); color: var(--code-text); padding: 15px; border-radius: 8px; overflow-x: auto; font-family: monospace; font-size: 14px; }
-        .post-full code { background: var(--code-bg); color: var(--code-text); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-        .post-full pre code { background: transparent; padding: 0; }
-        .post-full blockquote { border-left: 4px solid var(--accent); padding-left: 15px; color: var(--fg3); margin: 10px 0; }
-        .actions { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-top: 15px; }
-        .btn-link { color: var(--accent); font-weight: bold; text-decoration: none; cursor: pointer; }
-        .btn-link:hover { text-decoration: underline; }
-        .icon-btn { font-size: 18px; text-decoration: none; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
-        .icon-btn:hover { opacity: 1; }
-        mark { background: #ffeb3b; color: #000; padding: 0 2px; border-radius: 2px; }
-
-        
-        
-        
-    
-        
-        
-        
-        
-
-    
-        
-        
-
-    
-        #scroll-top {
-            position: fixed; bottom: 80px; right: 20px; width: 50px; height: 50px;
-            border-radius: 50%; background: var(--accent); color: #fff; border: none;
-            font-size: 24px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: none; z-index: 99999;
-            opacity: 0.9; transition: opacity 0.2s;
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
         }
-        #scroll-top:hover { opacity: 1; }
-        #scroll-top.visible { display: block; }
-
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 400;
+        }
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .post-node {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+        .post-subject {
+            font-size: 1.4rem;
+            color: #fff;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .post-preview {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+        .post-full {
+            display: none;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        .post-full img {
+            max-width: 100%;
+            border-radius: 4px;
+        }
+        .post-full a {
+            color: var(--accent);
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+        .giscus-btn {
+            background: #6e5494;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        .giscus-btn:hover { opacity: 0.9; color: white; }
+        
+        /* Плавающая кнопка админа */
+        .admin-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: var(--surface);
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+        }
+        .admin-float a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #6e5494;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .highlight {
+            background-color: #ffeb3b;
+            color: #000;
+            border-radius: 2px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">Блог</div>
-        <input type="text" id="search-input" placeholder="🔍 Поиск..." style="width:100%; padding:15px; border:1px solid var(--border); border-radius:10px; font-size:16px; margin-bottom:20px; box-sizing:border-box; background:var(--card-bg); color:var(--text);">
-        <div id="feed"><p>Загрузка...</p></div>
+        <header>
+            <h1>Блог</h1>
+        </header>
+        
+        <input type="text" id="search" class="search-box" placeholder="🔍 Поиск...">
+        
+        <div id="feed">
+            <p>Загрузка...</p>
+        </div>
     </div>
 
     <script>
-        // Тема
-        var currentTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', currentTheme);
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'theme') document.documentElement.setAttribute('data-theme', e.newValue || 'light');
-        });
+        let allPosts = [];
+        let currentQuery = '';
 
-        let allNodes = [];
-        let query = '';
+        // Функция подсветки поиска
+        function highlight(text, query) {
+            if (!query) return text;
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
 
-        // Загрузка с защитой от кэша
-        fetch('./tree.json?v=' + Date.now())
-            .then(r => {
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                return r.json();
-            })
-            .then(data => {
-                allNodes = data;
-                render(data);
-
-            // --- АВТО-СКРОЛЛ И РАСКРЫТИЕ ПОСТА ---
-            if (window.location.hash) {
-                const targetId = window.location.hash.substring(1);
-                setTimeout(() => {
-                    const targetEl = document.getElementById(targetId);
-                    if (targetEl) {
-                        targetEl.scrollIntoView({ behavior: 'smooth' });
-                        // Ищем кнопку "Читать полностью" внутри блока actions
-                        const buttons = targetEl.querySelectorAll('.actions button, .actions a');
-                        if (buttons.length > 0) {
-                            buttons[0].click(); // Нажимаем первую кнопку (обычно "Читать")
-                        }
-                    }
-                }, 300);
-            }
-
-            })
-            .catch(err => {
-                console.error('Ошибка загрузки:', err);
-                document.getElementById('feed').innerHTML = '<p style="color:red;">Ошибка загрузки постов: ' + err.message + '</p>';
+        // Функция копирования ссылки на пост
+        function copyLink(e, postId) {
+            e.preventDefault();
+            let baseUrl = window.location.origin + window.location.pathname;
+            if (baseUrl.endsWith('index.html')) baseUrl = baseUrl.replace('index.html', '');
+            if (!baseUrl.endsWith('/')) baseUrl += '/';
+            const url = baseUrl + '#' + postId;
+            
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Ссылка на статью скопирована!');
+            }).catch(() => {
+                prompt('Скопируйте ссылку вручную:', url);
             });
+        }
 
+        // Функция переключения полного текста
+        function togglePost(idx) {
+            const preview = document.getElementById(`preview-${idx}`);
+            const full = document.getElementById(`full-${idx}`);
+            const btn = document.getElementById(`toggle-btn-${idx}`);
+            
+            if (full.style.display === 'block') {
+                full.style.display = 'none';
+                preview.style.display = 'block';
+                btn.innerText = 'Читать полностью';
+            } else {
+                full.style.display = 'block';
+                preview.style.display = 'none';
+                btn.innerText = 'Свернуть';
+            }
+        }
+
+        // Рендер постов
         function render(nodes) {
             const feed = document.getElementById('feed');
             feed.innerHTML = '';
+            
             if (nodes.length === 0) {
                 feed.innerHTML = '<p>Ничего не найдено.</p>';
                 return;
             }
+
             nodes.forEach((node, idx) => {
                 const div = document.createElement('div');
                 div.className = 'post-node';
                 div.id = node.id;
 
-                // Очищаем превью от Markdown-заголовков
                 const cleanBody = (node.body || '').replace(/^#+\s+/gm, '').replace(/\*\*/g, '');
                 const preview = cleanBody.substring(0, 200) + '...';
                 let fullHtml = node.body || '';
-                // Убираем первый заголовок (H1), чтобы не дублировать subject
                 fullHtml = fullHtml.replace(/^#\s+.*$/m, '');
+                
                 if (typeof marked !== 'undefined') {
                     fullHtml = marked.parse(fullHtml);
                 }
@@ -180,130 +242,75 @@
                         <span class="post-author">${node.from}</span>
                         <span>${node.date}</span>
                     </div>
-                    <div class="post-subject">${highlight(node.subject, query)}</div>
-                    <div class="post-preview" id="preview-${idx}">${highlight(preview, query)}</div>
+                    <div class="post-subject">${highlight(node.subject, currentQuery)}</div>
+                    <div class="post-preview" id="preview-${idx}">${highlight(preview, currentQuery)}</div>
                     <div class="post-full" id="full-${idx}">${fullHtml}</div>
                     <div class="actions">
-                        <a href="#" class="btn-link" id="btn-${idx}" onclick="togglePost(event, ${idx})">Читать полностью →</a>
-                        <a href="./comments.html?id=${node.id}&title=${encodeURIComponent(node.subject)}" class="btn-link" target="_blank">💬 Обсудить</a>
-                        <a href="#" class="icon-btn" onclick="copyLink(event, '${node.id}'); return false;" title="Скопировать ссылку">🔗</a>
-                        <a href="#" class="icon-btn" onclick="copyText(event, '${node.id}'); return false;" title="Скопировать текст">📋</a>
+                        <button class="btn" id="toggle-btn-${idx}" onclick="togglePost(${idx})">Читать полностью</button>
+                        <button class="btn" onclick="copyLink(event, '${node.id}')">🔗 Поделиться</button>
+                        <a href="comments.html?id=${node.id}" class="btn">💬 Комментарии</a>
                     </div>
                 `;
+                
+                // Добавляем кнопку Giscus в админ-режиме
+                if (window.location.search.includes('admin=1')) {
+                    const adminBtn = document.createElement('div');
+                    adminBtn.innerHTML = `<a href="https://github.com/x2v0/blog/discussions" target="_blank" class="giscus-btn">⚙️ Управление комментариями (GitHub)</a>`;
+                    div.appendChild(adminBtn);
+                }
+
                 feed.appendChild(div);
             });
         }
 
-        function togglePost(e, idx) {
-            e.preventDefault();
-            const preview = document.getElementById('preview-' + idx);
-            const full = document.getElementById('full-' + idx);
-            const btn = document.getElementById('btn-' + idx);
-
-            if (full.style.display === 'block') {
-                full.style.display = 'none';
-                preview.style.display = 'block';
-                btn.textContent = 'Читать полностью →';
-            } else {
-                full.style.display = 'block';
-                preview.style.display = 'none';
-                btn.textContent = '← К списку статей';
-            }
-        }
-
-        function copyLink(e, postId) {
-        e.preventDefault();
-        let baseUrl = window.location.origin + window.location.pathname;
-        if (baseUrl.endsWith('index.html')) baseUrl = baseUrl.replace('index.html', '');
-        if (!baseUrl.endsWith('/')) baseUrl += '/';
-        const url = baseUrl + '#' + postId;
-        navigator.clipboard.writeText(url).then(() => {
-            if(typeof showToast === 'function') showToast('Ссылка на статью скопирована!');
-            else alert('Ссылка скопирована: ' + url);
-        });
-    }
-            if (!baseUrl.endsWith('/')) {
-                baseUrl += '/';
-            }
-            const url = baseUrl + '#' + postId;
-            navigator.clipboard.writeText(url).then(() => showToast('Ссылка на статью скопирована!'));
-        }
-
-        function copyText(e, postId) {
-            e.preventDefault();
-            const node = allNodes.find(n => n.id === postId);
-            if (!node) return;
-            const text = `# ${node.subject}\n\n${node.body}`;
-            navigator.clipboard.writeText(text).then(() => showToast('Текст поста скопирован!'));
-        }
-
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.textContent = message;
-            toast.style.cssText = 'position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 20px; border-radius: 8px; z-index: 9999; font-size: 14px;';
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
-        }
-
-        function highlight(text, q) {
-            if (!q) return text;
-            const safeQ = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            return text.replace(new RegExp('(' + safeQ + ')', 'gi'), '<mark>$1</mark>');
-        }
-
-        document.getElementById('search-input').addEventListener('input', function(e) {
-            query = e.target.value.trim();
-            if (!query) { render(allNodes); return; }
-            const filtered = allNodes.filter(n =>
-                (n.subject || '').toLowerCase().includes(query.toLowerCase()) ||
-                (n.body || '').toLowerCase().includes(query.toLowerCase())
+        // Поиск
+        document.getElementById('search').addEventListener('input', (e) => {
+            currentQuery = e.target.value.toLowerCase();
+            const filtered = allPosts.filter(p => 
+                (p.subject || '').toLowerCase().includes(currentQuery) || 
+                (p.body || '').toLowerCase().includes(currentQuery)
             );
             render(filtered);
         });
 
-        
-    
-        
+        // Загрузка данных
+        fetch('./tree.json?v=' + Date.now())
+            .then(r => r.json())
+            .then(data => {
+                allPosts = data;
+                render(data);
 
-    
-        
-
-    
-        document.addEventListener("DOMContentLoaded", function() {
-            var btn = document.getElementById("scroll-top");
-            if(!btn) return;
-            window.addEventListener("scroll", function() {
-                if (window.scrollY > 300) btn.classList.add("visible");
-                else btn.classList.remove("visible");
+                // Авто-скролл и раскрытие, если есть хэш
+                if (window.location.hash) {
+                    const targetId = window.location.hash.substring(1);
+                    setTimeout(() => {
+                        const targetEl = document.getElementById(targetId);
+                        if (targetEl) {
+                            targetEl.scrollIntoView({ behavior: 'smooth' });
+                            const toggleBtn = targetEl.querySelector('.btn');
+                            if (toggleBtn && toggleBtn.innerText.includes('Читать')) {
+                                toggleBtn.click();
+                            }
+                        }
+                    }, 300);
+                }
+            })
+            .catch(err => {
+                document.getElementById('feed').innerHTML = `<p style="color:red">Ошибка загрузки: ${err.message}</p>`;
             });
-            btn.addEventListener("click", function() {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            });
-        });
 
-    </script>
-
-<button id="scroll-top" title="Наверх">↑</button>
-
-    
-
-
-    <script>
-        // Если в URL есть ?admin=1, показываем кнопку перехода к обсуждениям на GitHub
+        // Плавающая кнопка админа
         if (window.location.search.includes('admin=1')) {
-            document.addEventListener('DOMContentLoaded', () => {
-                const adminBar = document.createElement('div');
-                adminBar.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: var(--surface, #fff); padding: 12px; border: 1px solid var(--rule, #ccc); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);';
-                adminBar.innerHTML = `
-                    <a href="https://github.com/x2v0/blog/discussions" target="_blank" style="display: flex; align-items: center; gap: 8px; background: #6e5494; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; font-family: system-ui, sans-serif; font-size: 14px; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
-                        <svg height="20" viewBox="0 0 16 16" width="20" fill="currentColor"><path d="M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25v-8.5C0 1.784.784 1 1.75 1ZM1.5 2.75v8.5c0 .138.112.25.25.25h2.5a.75.75 0 0 1 .75.75v1.19l2.72-2.72a.75.75 0 0 1 .53-.22h5.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Z"></path></svg>
-                        Управление комментариями (GitHub)
-                    </a>
-                `;
-                document.body.appendChild(adminBar);
-            });
+            const adminBar = document.createElement('div');
+            adminBar.className = 'admin-float';
+            adminBar.innerHTML = `
+                <a href="https://github.com/x2v0/blog/discussions" target="_blank">
+                    <svg height="20" viewBox="0 0 16 16" width="20" fill="currentColor"><path d="M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25v-8.5C0 1.784.784 1 1.75 1ZM1.5 2.75v8.5c0 .138.112.25.25.25h2.5a.75.75 0 0 1 .75.75v1.19l2.72-2.72a.75.75 0 0 1 .53-.22h5.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Z"></path></svg>
+                    Управление комментариями
+                </a>
+            `;
+            document.body.appendChild(adminBar);
         }
     </script>
-
 </body>
 </html>
