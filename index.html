@@ -15,7 +15,7 @@
             --border: #333;
         }
 
-        [data-theme="light"] {
+        html[data-theme="light"] {
             --bg: #f5f3eb;
             --surface: #ffffff;
             --text: #333333;
@@ -80,7 +80,7 @@
         }
         .post-subject {
             font-size: 1.4rem;
-            color: #fff;
+            color: var(--text);
             font-weight: bold;
             margin-bottom: 15px;
         }
@@ -190,7 +190,7 @@
 
     #scroll-top {
         position: fixed; bottom: 80px; right: 20px; width: 50px; height: 50px;
-        border-radius: 50%; background: #0288d1; color: #fff; border: none;
+        border-radius: 50%; background: #0288d1; color: var(--text); border: none;
         font-size: 24px; font-weight: bold; cursor: pointer;
         box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: none; z-index: 99999;
         opacity: 0.9; transition: opacity 0.2s;
@@ -199,12 +199,23 @@
     #scroll-top.visible { display: block; }
 </style>
 
+    
     <script>
     (function() {
+        var root = document.documentElement;
+        // Загружаем тему из localStorage или ставим темную по умолчанию
         var savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
+        root.setAttribute('data-theme', savedTheme);
+
+        // Слушаем изменения темы в других вкладках
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'theme') {
+                root.setAttribute('data-theme', e.newValue || 'dark');
+            }
+        });
     })();
     </script>
+
 
 </head>
 <body>
