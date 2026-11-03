@@ -127,6 +127,23 @@
             .then(data => {
                 allNodes = data;
                 render(data);
+
+            // --- АВТО-СКРОЛЛ И РАСКРЫТИЕ ПОСТА ---
+            if (window.location.hash) {
+                const targetId = window.location.hash.substring(1);
+                setTimeout(() => {
+                    const targetEl = document.getElementById(targetId);
+                    if (targetEl) {
+                        targetEl.scrollIntoView({ behavior: 'smooth' });
+                        // Ищем кнопку "Читать полностью" внутри блока actions
+                        const buttons = targetEl.querySelectorAll('.actions button, .actions a');
+                        if (buttons.length > 0) {
+                            buttons[0].click(); // Нажимаем первую кнопку (обычно "Читать")
+                        }
+                    }
+                }, 300);
+            }
+
             })
             .catch(err => {
                 console.error('Ошибка загрузки:', err);
