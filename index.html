@@ -309,6 +309,7 @@
                     <div class="actions">
                         <button class="btn" id="toggle-btn-${idx}" onclick="togglePost(${idx})">Читать полностью</button>
                         <button class="btn" onclick="copyLink(event, '${node.id}')">🔗 Поделиться</button>
+                        <button class="btn" onclick="copyPostText(event, '${node.id}')">📋 Копировать</button>
                         <a href="comments.html?id=${node.id}" class="btn">💬 Комментарии</a>
                     </div>
                 `;
