@@ -243,6 +243,46 @@
         }
 
         // Функция копирования ссылки на пост
+
+        function copyPostText(e, postId) {
+            if (e) e.preventDefault();
+            
+            if (typeof allPosts === 'undefined') {
+                alert('Ошибка: массив постов не загружен.');
+                return;
+            }
+            
+            const post = allPosts.find(p => p.id === postId);
+            if (!post) {
+                alert('Ошибка: пост не найден в базе.');
+                return;
+            }
+
+            const text = (post.subject || '') + "\n\n" + (post.body || '');
+            
+            // «Дедовский» метод, который работает на 100% на любых устройствах
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.top = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    alert('Текст поста скопирован!');
+                } else {
+                    alert('Не удалось скопировать. Попробуйте выделить текст вручную.');
+                }
+            } catch (err) {
+                alert('Ошибка копирования: ' + err);
+            }
+            
+            document.body.removeChild(textarea);
+        }
+
         function copyLink(e, postId) {
             e.preventDefault();
             let baseUrl = window.location.origin + window.location.pathname;
