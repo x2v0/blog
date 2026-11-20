@@ -197,6 +197,14 @@
     }
     #scroll-top:hover { opacity: 1; }
     #scroll-top.visible { display: block; }
+
+/* fix: перенос длинных строк в блоках кода на мобильных */
+pre, code {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    overflow-x: hidden !important;
+}
+
 </style>
 
     
