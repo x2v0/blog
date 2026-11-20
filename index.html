@@ -346,6 +346,7 @@ pre, code {
                 
                 if (typeof marked !== 'undefined') {
                     fullHtml = marked.parse(fullHtml);
+        if (typeof hljs !== 'undefined') { setTimeout(() => hljs.highlightAll(), 50); }
                 }
 
                 div.innerHTML = `
