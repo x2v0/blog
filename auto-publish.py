@@ -147,6 +147,18 @@ def main():
     TREE.write_text(json.dumps(tree, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"[OK] tree.json обновлён (всего постов: {len(tree)})")
 
+    print("\n=== Генерация HTML (collect.py) ===")
+    if (ROOT / "collect.py").exists():
+        r = subprocess.run(["python3", "collect.py"], cwd=ROOT, capture_output=True, text=True)
+        if r.returncode != 0:
+            print("[WARN] collect.py завершился с ошибкой:")
+            print(r.stdout)
+            print(r.stderr)
+        else:
+            print("[OK] HTML сгенерирован")
+    else:
+        print("[SKIP] collect.py не найден")
+
     print("\n=== Тесты ===")
     r = subprocess.run(["node", "--test", "tests/site.test.js"], cwd=ROOT, capture_output=True, text=True)
     if r.returncode != 0:
