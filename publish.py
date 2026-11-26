@@ -1,157 +1,109 @@
+#!/usr/bin/env python3
+"""Публикует пост из post.md в блог. Обновляет существующий, не создаёт дубликаты."""
 import json
 import pathlib
-import datetime
 import sys
 import subprocess
 import requests
 import os
 
+from blog_utils import slugify, extract_subject, load_tree, save_tree, upsert_post
+
+ROOT = pathlib.Path(__file__).parent
+TREE = ROOT / "tree.json"
+DISCUSSION_CATEGORY_ID = "DIC_kwDOFNRB_84DJ5jS"
+DISCUSSION_REPO = "x2v0/x2v0.github.io"
+
+
 def run_tests():
-    """Запускает тесты из основного репозитория перед пушем."""
-    print("\n=== Запуск тестов (site.test.js) ===")
-    try:
-        tests_dir = pathlib.Path.home() / "x2v0.github.io"
-        result = subprocess.run(
-            ["node", "--test", "tests/site.test.js"],
-            cwd=tests_dir,
-            capture_output=True,
-            text=True
-        )
-        if result.returncode != 0:
-            print("❌ ТЕСТЫ ПРОВАЛЕНЫ! Пуш отменён.")
-            print(result.stdout)
-            print(result.stderr)
-            return False
-        print("✅ Все тесты пройдены.")
+    print("\n=== Тесты ===")
+    tests_dir = pathlib.Path.home() / "x2v0.github.io"
+    if not (tests_dir / "tests" / "site.test.js").exists():
+        print(f"[WARN] тесты не найдены в {tests_dir}/tests/site.test.js")
         return True
-    except Exception as e:
-        print(f"⚠ Не удалось запустить тесты: {e}")
-        return True
+    r = subprocess.run(["node", "--test", "tests/site.test.js"], cwd=tests_dir, capture_output=True, text=True)
+    if r.returncode != 0:
+        print("[FAIL] тесты провалены, пуш отменён")
+        print(r.stdout)
+        print(r.stderr)
+        return False
+    print("[OK] тесты пройдены")
+    return True
+
+
+def create_discussion(token: str, title: str, body: str):
+    url = "https://api.github.com/graphql"
+    headers = {"Authorization": f"Bearer {token}"}
+    r = requests.post(url, json={"query": 'query { repository(owner: "x2v0", name: "x2v0.github.io") { id } }'}, headers=headers)
+    data = r.json()
+    if "data" not in data:
+        return None
+    repo_id = data["data"]["repository"]["id"]
+    q = '''mutation($r: ID!, $c: ID!, $t: String!, $b: String!) {
+      createDiscussion(input: {repositoryId: $r, categoryId: $c, title: $t, body: $b}) {
+        discussion { number }
+      }
+    }'''
+    r = requests.post(url, json={"query": q, "variables": {"r": repo_id, "c": DISCUSSION_CATEGORY_ID, "t": title, "b": body}}, headers=headers)
+    data = r.json()
+    if "errors" in data:
+        print(f"[WARN] Discussion: {data['errors'][0]['message']}")
+        return None
+    return data["data"]["createDiscussion"]["discussion"]["number"]
+
 
 def main():
-    post_file = "post.md"
-    if not pathlib.Path(post_file).exists():
-        print(f"⚠ Файл {post_file} не найден. Создай его с текстом поста.")
-        return
-
-    content = pathlib.Path(post_file).read_text(encoding="utf-8").strip()
+    post_file = ROOT / "post.md"
+    if not post_file.exists():
+        print(f"[ERROR] {post_file} не найден")
+        return 1
+    content = post_file.read_text(encoding="utf-8").strip()
     if not content:
-        print("⚠ Файл пуст.")
-        return
+        print("[ERROR] post.md пуст")
+        return 1
 
-    first_line = content.split("\n")[0]
-    if first_line.startswith("# "):
-        subject = first_line[2:].strip()
+    subject = extract_subject(content)
+    slug = slugify(subject)
+    (ROOT / "posts").mkdir(exist_ok=True)
+    (ROOT / "posts" / f"{slug}.md").write_text(content, encoding="utf-8")
+    print(f"[OK] posts/{slug}.md")
+
+    tree = load_tree(TREE)
+    post, is_new = upsert_post(tree, subject, content)
+    if is_new:
+        print(f"[OK] Новый пост: {post['id']}")
     else:
-        subject = "Без названия"
+        print(f"[OK] Обновлён существующий: {post['id']} (без дубликата)")
 
-    slug = subject.lower().replace(" ", "_").replace("ё", "e").replace("й", "i")
-    slug = "".join(c for c in slug if c.isalnum() or c in "_-")[:40]
-    filename = f"posts/{slug}.md"
-
-    pathlib.Path(filename).write_text(content, encoding="utf-8")
-    print(f"✓ Пост сохранён: {filename}")
-
-    tree_path = pathlib.Path("tree.json")
-    tree = json.loads(tree_path.read_text(encoding="utf-8")) if tree_path.exists() else []
-
-    today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    
-    # ИСПОЛЬЗУЕМ ЧИСЛОВОЙ ID (для Giscus)
-    max_id = 0
-    for p in tree:
-        if p.get("id", "").startswith("post-"):
-            try:
-                num = int(p["id"].split("-")[1])
-                if num > max_id: max_id = num
-            except: pass
-    new_id = f"post-{max_id + 1}"
-    new_post = {
-        "id": new_id,
-        "in_reply_to": "",
-        "references": [],
-        "from": "Автор",
-        "subject": subject,
-        "date": today,
-        "body": content,
-        "children": []
-    }
-
-    # === СОЗДАНИЕ DISCUSSION И ПОЛУЧЕНИЕ НОМЕРА ===
-    token = None
+    # Discussion — только если его ещё нет
     token_path = pathlib.Path.home() / "git.txt"
-    if token_path.exists():
+    if "discussion_number" in post:
+        print(f"[SKIP] Discussion уже есть: #{post['discussion_number']}")
+    elif token_path.exists():
         token = token_path.read_text().strip()
+        num = create_discussion(token, post["id"], f"Обсуждение поста: {subject}")
+        if num:
+            post["discussion_number"] = num
+            print(f"[OK] Discussion #{num}")
 
-    disc_number = None
-    if token:
-        print("\n=== Создание Discussion и получение номера ===")
-        try:
-            url = "https://api.github.com/graphql"
-            headers = {"Authorization": f"Bearer {token}"}
+    save_tree(TREE, tree)
+    print(f"[OK] tree.json ({len(tree)} постов)")
 
-            # Получаем ID репозитория
-            repo_query = 'query { repository(owner: "x2v0", name: "x2v0.github.io") { id } }'
-            repo_resp = requests.post(url, json={"query": repo_query}, headers=headers)
-
-            if "data" in repo_resp.json():
-                repo_id = repo_resp.json()["data"]["repository"]["id"]
-
-                # Создаём Discussion и запрашиваем номер (number)
-                create_query = """
-                mutation($repoId: ID!, $categoryId: ID!, $title: String!, $body: String!) {
-                  createDiscussion(input: {repositoryId: $repoId, categoryId: $categoryId, title: $title, body: $body}) {
-                    discussion { id number }
-                  }
-                }
-                """
-                create_vars = {
-                    "repoId": repo_id,
-                    "categoryId": "DIC_kwDOFNRB_84DJ5jS",
-                    "title": new_id,
-                    "body": f"Обсуждение поста: {subject}"
-                }
-                create_resp = requests.post(url, json={"query": create_query, "variables": create_vars}, headers=headers)
-
-                if "errors" in create_resp.json():
-                    print(f"⚠ Discussion не создан: {create_resp.json()['errors'][0]['message']}")
-                else:
-                    disc_number = create_resp.json()["data"]["createDiscussion"]["discussion"]["number"]
-                    print(f"✓ Discussion #{disc_number} создан для {new_id}")
-                    new_post["discussion_number"] = disc_number # Сохраняем номер в пост
-        except Exception as e:
-            print(f"⚠ Не удалось создать Discussion: {e}")
-    else:
-        print("⚠ Токен не найден (~/git.txt). Discussion не создан.")
-
-    # === СОХРАНЕНИЕ TREE.JSON ===
-    existing_ids = [n.get("id", "") for n in tree]
-    if new_id in existing_ids:
-        print(f"⚠ Пост с id {new_id} уже есть. Обновляю...")
-        for i, n in enumerate(tree):
-            if n.get("id") == new_id:
-                tree[i] = new_post
-                break
-    else:
-        tree.insert(0, new_post)
-
-    tree_path.write_text(json.dumps(tree, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"✓ tree.json обновлён (всего постов: {len(tree)})")
-
-    # === ЗАПУСК ТЕСТОВ ПЕРЕД ПУШЕМ ===
     if not run_tests():
-        print("⚠ Публикация остановлена из-за ошибок в тестах.")
-        return
+        return 1
 
-    # === ПУШ НА GITHUB ===
-    print("\n=== Пуш на GitHub ===")
-    subprocess.run(["git", "add", "-A"])
-    subprocess.run(["git", "commit", "-m", f"feat: add post '{subject}'"])
-    subprocess.run(["git", "push", "origin", "main"])
-    
-    if disc_number:
-        print(f"\n🔗 Прямая ссылка на обсуждение: https://github.com/x2v0/x2v0.github.io/discussions/{disc_number}")
-    print("✓ Готово! Пост опубликован.")
+    print("\n=== git push ===")
+    subprocess.run(["git", "add", "-A"], cwd=ROOT, check=True)
+    r = subprocess.run(["git", "-c", "user.name=blog-bot", "-c", "user.email=blog-bot@local",
+                        "commit", "-m", f"feat: publish '{subject}'"], cwd=ROOT, capture_output=True, text=True)
+    print(r.stdout.strip())
+    if r.returncode != 0 and "nothing to commit" not in r.stdout:
+        print(r.stderr)
+        return 1
+    subprocess.run(["git", "push", "origin", "main"], cwd=ROOT, check=True)
+    print("[OK] запушено")
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
