@@ -20,7 +20,7 @@
 
 ### 1. Как это работает (Pipeline)
 
-Репозиторий **[dsh-builder](https://github.com/x2v0/dsh-builder)**, это не форк DSH, а набор патчей и скриптов для GitHub Actions. Он не хранит исходники DSH, а загружает их в CI из официального репозитория **[deepseek-ai/deepseek-harnes](https://github.com/deepseek-ai/deepseek-harnes)**.
+Репозиторий **[dsh-builder](https://github.com/x2v0/dsh-builder)**, это не форк DSH, а набор патчей и скриптов для GitHub Actions. Он не хранит исходники DSH, а загружает их в CI из официального репозитория **[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)**.
 
 *   **Триггер:** Запуск `gh workflow run build-dsh.yml` или Push в `main`.
 *   **Сборка:** GitHub Actions запускает Ubuntu runner с Node.js 24 и Android NDK.
